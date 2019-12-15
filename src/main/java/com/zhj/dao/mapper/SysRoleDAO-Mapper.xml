@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhj.dao.SysRoleDAO">
+  <resultMap id="baseResultMap" type="SysRole" >
+    <id column="role_id" property="roleId"/>
+    <result column="role_name" property="roleName"/>
+    <result column="remark" property="remark"/>
+    <result column="create_user_id" property="createUserId"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+  <select id="querySysRolesByUserName" parameterType="string" resultType="string">
+    SELECT DISTINCT r.role_name roleName from sys_user u
+    INNER JOIN sys_user_role ur
+    on u.user_id = ur.user_id
+    INNER JOIN sys_role r
+    on ur.role_id = r.role_id
+    where u.username = #{username}
+  </select>
+
+  <select id="querySysRoles" resultType="string" resultMap="baseResultMap">
+    SELECT  role_id ,role_name,remark,create_time
+    FROM sys_role
+  </select>
+
+  <select id="querySysRoleByRoleId" resultMap="baseResultMap">
+    SELECT  role_id ,role_name,remark,create_time
+    FROM sys_role
+    WHERE role_id = #{roleId}
+  </select>
+
+  <select id="queryRoleCount" resultType="com.zhj.vo.RoleCount">
+    select sys_role.role_name roleName,
+       sum(case when sex='男' then 1 else 0 end) male,
+       sum(case when sex='女' then 1 else 0 end) female
+    from sys_role
+    JOIN sys_user_role
+    ON sys_role.role_id = sys_user_role.role_id
+    JOIN sys_user
+    ON  sys_user.user_id = sys_user_role.user_id
+    group by sys_role.role_name;
+  </select>
+
+  <insert id="insertRole" parameterType="SysRole">
+    <selectKey resultType="int" order="AFTER" keyProperty="roleId">
+      SELECT last_insert_id()
+    </selectKey>
+    INSERT INTO sys_role (role_name,remark,create_time)
+    VALUES (#{roleName},#{remark},#{createTime})
+  </insert>
+</mapper>

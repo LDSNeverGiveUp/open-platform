@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    <!-- Reaml -->
+    <bean class="com.zhj.realm.MyRealm" id="myRealm">
+        <property name="userService" ref="sysUserServiceImpl"/>
+        <property name="roleService" ref="sysRoleServiceImpl"/>
+        <property name="permService" ref="sysMenuServiceImpl"/>
+        <!-- 注入密码匹配器 -->
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="sha-256"/>
+                <property name="hashIterations" value="1024"/>
+                <property name="storedCredentialsHexEncoded" value="false"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Securitymanager -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"/>
+    </bean>
+
+    <!-- ShiroFilter -->
+    <bean class="org.apache.shiro.spring.web.ShiroFilterFactoryBean" id="shirofilter03">
+        <!-- 依赖SecurityManager -->
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+</beans>

@@ -1,0 +1,9 @@
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+#忽略taraget目录
+target
+intr.txt

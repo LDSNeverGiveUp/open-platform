@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  dtd: xxx.dtd     document type definition
+  xsd: xxx.xsd     xml  schema definition
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 扫描注解
+         通过 【，；】分隔的多个包，包中的类如果有注解，会被扫描
+         当然也可以被多个要扫描的包，定义一个父包
+    -->
+    <!--<context:component-scan base-package="com.zhj.controller,com.zhj2.controller"/>-->
+    <context:component-scan base-package="com.zhj" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 注解开发驱动：识别，解析后端控制器中的注解 -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <!-- 视图解析器
+         解析过程：捕获后端控制器的方法返回值，并做前后缀拼接的处理，得到完整的视图路径
+     -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 定义前后缀 -->
+        <property name="prefix" value="/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 多注册一个Handler，此handler的requestMapping是 【/**】，匹配优先级最低
+         url-pattern : /* 一切
+         requestMapping: /*  一切一级路径    /a   /b   /c    /asdfsdfasgadf
+                         /**  一切
+         将请求转发给tomcat的 DefalutServet
+     -->
+    <mvc:default-servlet-handler/>
+
+
+    <!-- shiro注解开发  配置
+         原理：动态代理，额外功能中安全校验，目标是添加了权限注解的controller
+     -->
+    <bean id="lifecycleBeanPostProcessor"
+          class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <aop:config></aop:config>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!-- 异常处理 -->
+    <bean class="com.zhj.exception.MyExceptionResolver"/>
+</beans>

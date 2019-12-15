@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhj.dao.SysRoleMenuDAO">
+
+  <insert id="insertMultRoleMenu" parameterType="java.util.List">
+      insert into sys_role_menu (menu_id,role_id) VALUES
+      <foreach collection="list" item="rm" separator=",">
+        (#{rm.menuId},#{rm.roleId})
+      </foreach>
+  </insert>
+
+    <select id="queryRoleMenus" parameterType="int" resultType="int">
+        SELECT menu_id FROM sys_role_menu
+        WHERE role_id = #{roleId}
+    </select>
+    <!--<delete id="deleteUserRole" parameterType="int">
+        DELETE FROM sys_user_role
+        WHERE user_id = #{userId}
+    </delete>
+
+    <select id="queryUserRoles" parameterType="int" resultType="int">
+        SELECT role_id FROM sys_user_role
+        WHERE user_id = #{userId}
+    </select>-->
+</mapper>

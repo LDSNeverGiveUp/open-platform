@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhj.dao.SysUserDAO" >
+    <resultMap id="baseResultMap" type="SysUser" >
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="mobile" property="mobile"/>
+        <result column="status" property="status"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="sex" property="sex"/>
+        <result column="lockdate" property="lockdate"></result>
+        <result column="salt" property="salt"></result>
+    </resultMap>
+    <select id="querySysUserByUserName" parameterType="string" resultMap="baseResultMap">
+        SELECT * FROM sys_user
+        WHERE username = #{username}
+    </select>
+
+    <select id="querySysUsers" resultMap="baseResultMap">
+      SELECT * FROM sys_user
+    </select>
+
+    <select id="querySysUserByUserId" parameterType="int" resultMap="baseResultMap">
+        SELECT * FROM sys_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertSysUser" parameterType="SysUser">
+        <selectKey resultType="int" order="AFTER" keyProperty="userId">
+            SELECT last_insert_id()
+        </selectKey>
+        INSERT INTO sys_user(username,password,email,mobile,status,create_user_id,create_time,sex,lockdate,salt)
+        VALUE (#{username},#{password},#{email},#{mobile},#{status},#{createUserId},#{createTime},#{sex},#{lockdate},#{salt})
+    </insert>
+    <insert id="updateSysUser" parameterType="SysUser">
+        UPDATE sys_user
+        SET username=#{username},email=#{email},mobile=#{mobile},
+            status=#{status},create_time=#{createTime},sex=#{sex}
+        WHERE user_id = #{userId}
+    </insert>
+
+    <delete id="deleteSysUser" parameterType="int">
+        DELETE FROM sys_user
+        WHERE user_id = #{userId}
+    </delete>
+</mapper>

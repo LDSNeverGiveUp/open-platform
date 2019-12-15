@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhj.dao.SysMenuDAO" >
+
+  <resultMap id="baseResultMap" type="SysMenu" >
+    <id column="menu_id" property="menuId"/>
+    <result column="parent_id" property="parentId"/>
+    <result column="name" property="name"/>
+    <result column="url" property="url"/>
+    <result column="perms" property="perms"/>
+    <result column="type" property="type"/>
+    <result column="icon" property="icon"/>
+    <result column="order_num" property="orderNum"/>
+  </resultMap>
+
+
+
+
+  <select id="queryPermsByUserName" parameterType="string" resultType="string">
+    SELECT DISTINCT m.perms   from sys_user u
+    INNER JOIN sys_user_role ur
+    on u.user_id = ur.user_id
+    INNER JOIN sys_role r
+    on ur.role_id = r.role_id
+    INNER JOIN sys_role_menu rm
+    on r.role_id = rm.role_id
+    inner JOIN sys_menu m
+    on rm.menu_id = m.menu_id
+    where u.username = #{username} AND m.perms is not null
+  </select>
+
+
+  <select id="queryUserFirstLevelMenus" parameterType="string" resultMap="baseResultMap">
+      SELECT DISTINCT m.*
+      FROM sys_user u
+      INNER JOIN sys_user_role ur
+        on u.user_id = ur.user_id
+      INNER JOIN sys_role r
+        on ur.role_id = r.role_id
+      INNER JOIN sys_role_menu rm
+        on r.role_id = rm.role_id
+      inner JOIN sys_menu m
+        on rm.menu_id = m.menu_id
+      where u.username = #{username} and m.type=0
+  </select>
+
+
+  <select id="queryUserSecondLevelMenusByUserName" resultMap="baseResultMap">
+      SELECT DISTINCT m.*
+      FROM sys_user u
+      INNER JOIN sys_user_role ur
+        on u.user_id = ur.user_id
+      INNER JOIN sys_role r
+        on ur.role_id = r.role_id
+      INNER JOIN sys_role_menu rm
+        on r.role_id = rm.role_id
+      inner JOIN sys_menu m
+        on rm.menu_id = m.menu_id
+      where u.username = #{username} and m.type=1 and m.parent_id=#{parentId}
+  </select>
+
+
+    <select id="queryAll" resultMap="baseResultMap">
+        SELECT *
+        FROM sys_menu m
+    </select>
+
+</mapper>
